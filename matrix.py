@@ -9,7 +9,7 @@ def frobenius(a):
 
 class matrix:
     # 初始化
-    def __init__(self, rate=0.0001, k=10, lamda=0.2):
+    def __init__(self, rate=0.0001, k=100, lamda=0.2):
         self.rate = rate
         self.k = k
         self.U = np.random.random([10000, self.k]) / 100
@@ -92,6 +92,6 @@ if __name__ == "__main__":
     X_train = np.load("train.npy")
     X_test = np.load("test.npy")
     # 初始化参数设置
-    model = matrix(rate=0.0001, k=10, lamda=0.2)
+    model = matrix(rate=0.0001, k=100, lamda=0.2)
     # 开始运行
     model.train_eval(X_train, X_test)
