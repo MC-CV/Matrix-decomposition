@@ -9,7 +9,7 @@ def frobenius(a):
 
 class matrix:
     # 初始化
-    def __init__(self, rate=0.0001, k=100, lamda=0.2):
+    def __init__(self, rate=0.01, k=100, lamda=0.2):
         self.rate = rate
         self.k = k
         self.U = np.random.random([10000, self.k]) / 100
@@ -20,7 +20,7 @@ class matrix:
     # 训练的同时每一轮进行测试计算在测试集上的RMSE
     def train_eval(self, X, test):
         # 指示矩阵A
-        A = np.ones([10000, 10000])
+        A = X > 0
         # 输入0时刻的loss和target
         losses = []
         losses.append(rmse(np.dot(self.U, self.V.T), test))
@@ -38,12 +38,12 @@ class matrix:
             pred = np.dot(self.U, self.V.T)
 
             # 梯度下降更新
-            self.U -= (
-                self.rate * (np.dot(A * (np.dot(self.U, self.V.T) - X), self.V))
+            self.U -= self.rate * (
+                (np.dot(A * (np.dot(self.U, self.V.T) - X), self.V))
                 + 2 * self.lamda * self.U
             )
-            self.V -= (
-                self.rate * (np.dot((A * (np.dot(self.U, self.V.T) - X)).T, self.U))
+            self.V -= self.rate * (
+                (np.dot((A * (np.dot(self.U, self.V.T) - X)).T, self.U))
                 + 2 * self.lamda * self.V
             )
 
@@ -60,8 +60,8 @@ class matrix:
             losses.append(loss)
             targets.append(target_after)
 
-            # 判断当target的变化小于等于0.01的时候作为收敛条件，此时退出迭代
-            if abs(target_after - target) <= 0.01:
+            # 判断当target的变化小于等于1的时候作为收敛条件，此时退出迭代
+            if abs(target_after - target) <= 1:
                 break
 
         # 画出迭代过程中目标函数值和测试集上RMSE的变化
@@ -92,6 +92,6 @@ if __name__ == "__main__":
     X_train = np.load("train.npy")
     X_test = np.load("test.npy")
     # 初始化参数设置
-    model = matrix(rate=0.0001, k=100, lamda=0.2)
+    model = matrix(rate=0.0001, k=100, lamda=0.01)
     # 开始运行
     model.train_eval(X_train, X_test)
