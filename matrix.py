@@ -26,9 +26,9 @@ class matrix:
         losses.append(rmse(np.dot(self.U, self.V.T), test))
         targets = []
         targets.append(
-            1 / 2 * frobenius((A * (X - np.dot(self.U, self.V.T))))
-            + self.lamda * frobenius(self.U)
-            + self.lamda * frobenius(self.V)
+            1 / 2 * pow(frobenius((A * (X - np.dot(self.U, self.V.T)))), 2)
+            + self.lamda * pow(frobenius(self.U), 2)
+            + self.lamda * pow(frobenius(self.V), 2)
         )
         for i in range(self.epoch):
             # 上一轮目标的值
@@ -49,9 +49,9 @@ class matrix:
 
             # 本轮迭代后目标的值
             target_after = (
-                1 / 2 * frobenius((A * (X - np.dot(self.U, self.V.T))))
-                + self.lamda * frobenius(self.U)
-                + self.lamda * frobenius(self.V)
+                1 / 2 * pow(frobenius((A * (X - np.dot(self.U, self.V.T)))), 2)
+                + self.lamda * pow(frobenius(self.U), 2)
+                + self.lamda * pow(frobenius(self.V), 2)
             )
 
             # 计算在测试集上的RMSE并记录，同时记录target的值
@@ -60,8 +60,8 @@ class matrix:
             losses.append(loss)
             targets.append(target_after)
 
-            # 判断当target的变化小于等于1的时候作为收敛条件，此时退出迭代
-            if abs(target_after - target) <= 1:
+            # 判断当target的变化小于等于1500的时候作为收敛条件，此时退出迭代
+            if abs(target_after - target) <= 5000:
                 break
 
         # 画出迭代过程中目标函数值和测试集上RMSE的变化
@@ -92,6 +92,6 @@ if __name__ == "__main__":
     X_train = np.load("train.npy")
     X_test = np.load("test.npy")
     # 初始化参数设置
-    model = matrix(rate=0.0001, k=100, lamda=0.01)
+    model = matrix(rate=0.0001, k=100, lamda=0)
     # 开始运行
     model.train_eval(X_train, X_test)
